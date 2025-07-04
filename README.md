@@ -5,6 +5,7 @@ A web application built with Django for managing student records, attendance, an
 
 
 
+![Uploading image.png…]()
 
 
 
