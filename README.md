@@ -2,20 +2,6 @@
 
 A web application built with Django for managing student records, attendance, and academic information.
 
-
-
-
-![Uploading image.png…]()
-
-
-
-
-
-
-
-
-
-
 ## Features
 
 - Student registration and management
