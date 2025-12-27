@@ -1,0 +1,132 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Smart School Login</title>
+
+    <link rel="stylesheet" href="{% static 'assets/plugins/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #007bff, #6610f2);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .login-card {
+            width: 420px;
+            background: #fff;
+            border-radius: 15px;
+            padding: 35px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, .2);
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .login-card h3 {
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .form-control {
+            height: 50px;
+            border-radius: 8px;
+            border: 1px solid #d4d4d4;
+            font-size: 15px;
+        }
+
+        .btn-login {
+            width: 100%;
+            height: 48px;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+
+        .input-group-text {
+            background: #fff;
+            border-right: none;
+        }
+
+        .form-control {
+            border-left: none;
+        }
+
+        .bottom-links {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .bottom-links a {
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="login-card">
+
+        <h3>Smart School Login</h3>
+
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group mb-4">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fa-solid fa-user"></i>
+                    </span>
+                    <input type="text" name="username" class="form-control" placeholder="Username" required>
+                </div>
+            </div>
+
+            <div class="form-group mb-4">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fa-solid fa-lock"></i>
+                    </span>
+                    <input type="password" name="password" class="form-control" placeholder="Password" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-login">LOGIN</button>
+
+            <div class="bottom-links">
+                <a href="{% url 'signup' %}">Create Account</a>
+            </div>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>

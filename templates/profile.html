@@ -1,0 +1,137 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="page-wrapper">
+  <div class="content container-fluid">
+
+    <div class="page-header">
+      <div class="row">
+        <div class="col-sm-12">
+          <h3 class="page-title">Administrator Profile</h3>
+          <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+            <li class="breadcrumb-item active">Profile</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="about-info">
+              <h4>About Administrator</h4>
+
+              <div class="media mt-3">
+                {% if admin.image %}
+                <img src="{{ admin.image.url }}" width="150" height="150" class="mr-3 rounded-circle">
+                {% else %}
+                <img src="{% static 'assets/img/profiles/avatar-02.jpg' %}" width="150" height="150" class="mr-3 rounded-circle">
+                {% endif %}
+
+                <div class="media-body">
+                  <ul>
+                    <li>
+                      <span class="title-span">Full Name : </span>
+                      <span class="info-span">{{ admin.name }}</span>
+                    </li>
+
+                    <li>
+                      <span class="title-span">Username : </span>
+                      <span class="info-span">{{ admin.username }}</span>
+                    </li>
+
+                    <li>
+                      <span class="title-span">Role : </span>
+                      <span class="info-span">Administrator</span>
+                    </li>
+
+                    <li>
+                      <span class="title-span">Mobile : </span>
+                      <span class="info-span">{{ admin.mobile }}</span>
+                    </li>
+
+                    <li>
+                      <span class="title-span">Email : </span>
+                      <span class="info-span">{{ admin.email }}</span>
+                    </li>
+
+                    <li>
+                      <span class="title-span">Joining Date : </span>
+                      <span class="info-span">{{ admin.joining_date }}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="row mt-3">
+                <div class="col-md-12">
+                  <h5>Address</h5>
+                  <p>{{ admin.address }}</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Settings Section -->
+    <div class="row mt-4">
+      <div class="col-md-12">
+        <div class="skill-info">
+
+          <h4>Update Profile</h4>
+          <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row mt-3">
+
+              <div class="col-12 col-sm-6">
+                <label>Name</label>
+                <input type="text" name="name" class="form-control" value="{{admin.name}}">
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <label>Mobile</label>
+                <input type="text" name="mobile" class="form-control" value="{{admin.mobile}}">
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <label>Email</label>
+                <input type="text" name="email" class="form-control" value="{{admin.email}}">
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <label>Profile Image</label>
+                <input type="file" name="image" class="form-control">
+              </div>
+
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary mt-3">Update Profile</button>
+              </div>
+
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <p>Copyright © Smart School {{ year }}</p>
+</footer>
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+
+{% endblock %}

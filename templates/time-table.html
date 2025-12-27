@@ -1,0 +1,179 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 px-4">
+    <div class="max-w-7xl mx-auto">
+
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-10">
+            <div>
+                <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-700">
+                    Class Time Table
+                </h1>
+                <nav class="flex mt-3 text-sm text-gray-600">
+                    <a href="{% url 'index' %}" class="hover:text-indigo-600">Dashboard</a>
+                    <span class="mx-2">/</span>
+                    <span class="text-purple-700 font-bold">Time Table</span>
+                </nav>
+            </div>
+
+            <div class="mt-6 sm:mt-0 flex items-center space-x-4">
+                <a href="#" class="flex items-center space-x-3 px-6 py-3.5 bg-white border-2 border-gray-300 rounded-xl shadow-md hover:shadow-lg font-medium text-gray-700 transition">
+                    <i class="fas fa-download text-purple-600"></i>
+                    <span>Export PDF</span>
+                </a>
+
+                <a href="{% url 'add_timetable' %}" 
+                   class="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-xl shadow-lg flex items-center space-x-3 transform hover:scale-105 transition duration-300">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Period</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+            <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-6 text-white shadow-2xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-purple-100 text-sm">Total Periods</p>
+                        <p class="text-5xl font-extrabold mt-2">{{ timetable_list|length }}</p>
+                    </div>
+                    <i class="fas fa-clock text-6xl opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-gradient-to-r from-indigo-500 to-blue-500 rounded-2xl p-6 text-white shadow-2xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-indigo-100 text-sm">Classes Covered</p>
+                        <p class="text-5xl font-extrabold mt-2">{{ unique_classes|length }}</p>
+                    </div>
+                    <i class="fas fa-chalkboard text-6xl opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl p-6 text-white shadow-2xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-100 text-sm">Teachers Assigned</p>
+                        <p class="text-5xl font-extrabold mt-2">{{ unique_teachers|length }}</p>
+                    </div>
+                    <i class="fas fa-user-tie text-6xl opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-6 text-white shadow-2xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-orange-100 text-sm">Daily Periods</p>
+                        <p class="text-5xl font-extrabold mt-2">8</p>
+                    </div>
+                    <i class="fas fa-calendar-day text-6xl opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Time Table Grid - Premium Card Style -->
+        {% if timetable_list %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {% for tt in timetable_list %}
+            <div class="group relative bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-3 border border-purple-100">
+
+                <!-- Top Gradient Bar -->
+                <div class="h-3 bg-gradient-to-r from-purple-500 to-pink-600"></div>
+
+                <!-- Card Body -->
+                <div class="p-6">
+                    <!-- Class & Day -->
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800 group-hover:text-purple-700 transition">
+                                Class {{ tt.class_name }}
+                            </h3>
+                            <p class="text-purple-600 font-bold text-lg mt-1">
+                                {{ tt.get_day_display }}
+                            </p>
+                        </div>
+                        <span class="px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 rounded-full text-sm font-bold">
+                            Period {{ forloop.counter }}
+                        </span>
+                    </div>
+
+                    <!-- Subject -->
+                    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-4 mb-4 border-l-4 border-purple-600">
+                        <p class="text-xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-book mr-3 text-purple-600"></i>
+                            {{ tt.subject }}
+                        </p>
+                    </div>
+
+                    <!-- Teacher -->
+                    <div class="flex items-center space-x-4 mb-5">
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-purple-200 to-pink-200 flex items-center justify-center shadow-lg">
+                            <i class="fas fa-chalkboard-teacher text-2xl text-purple-700"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800">{{ tt.teacher }}</p>
+                            <p class="text-sm text-gray-600">Faculty</p>
+                        </div>
+                    </div>
+
+                    <!-- Time -->
+                    <div class="bg-gray-100 rounded-xl px-5 py-3 text-center mb-5">
+                        <p class="text-2xl font-bold text-purple-700">
+                            {{ tt.start_time|time:"g:i A" }} - {{ tt.end_time|time:"g:i A" }}
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons (Hover) -->
+                    <div class="flex justify-center space-x-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <a href="{% url 'edit_timetable' tt.id %}" 
+                           class="p-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl shadow hover:shadow-xl transform hover:scale-110 transition">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form action="{% url 'delete_timetable' tt.id %}" method="POST" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" 
+                                    onclick="return confirm('Delete this period permanently?')"
+                                    class="p-3 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl shadow hover:shadow-xl transform hover:scale-110 transition">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Bottom Gradient -->
+                <div class="h-2 bg-gradient-to-r from-purple-500 to-pink-600"></div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- Premium Empty State -->
+        <div class="bg-white rounded-3xl shadow-2xl p-20 text-center border border-purple-100">
+            <div class="max-w-md mx-auto">
+                <i class="fas fa-calendar-alt text-9xl text-gray-300 mb-8 block"></i>
+                <h3 class="text-3xl font-bold text-gray-700 mb-4">No Time Table Added Yet!</h3>
+                <p class="text-gray-500 text-lg mb-8">
+                    Start building your perfect academic schedule by adding class periods.
+                </p>
+                <a href="{% url 'add_timetable' %}" 
+                   class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition duration-300">
+                    <i class="fas fa-plus mr-3"></i>
+                    Create First Period
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Footer -->
+        <div class="text-center mt-16 text-gray-500">
+            <p class="text-lg font-medium">© 2025 Preskool • Smart Class Scheduling System</p>
+        </div>
+    </div>
+</div>
+
+<!-- Icons & Tailwind -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
+{% endblock %}
