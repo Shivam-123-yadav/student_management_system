@@ -32,6 +32,9 @@ A web application built with Django for managing student records, attendance, an
    python manage.py runserver
    ```
 
+   <img width="1909" height="958" alt="image" src="https://github.com/user-attachments/assets/a9c9fa99-7a96-4263-a4b7-1eecfa4e60ec" />
+
+
 ## License
 
 This project is licensed under the MIT License.
