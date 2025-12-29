@@ -3,7 +3,8 @@
 A web application built with Django for managing student records, attendance, and academic information.
 
 
-<img width="1910" height="963" alt="image" src="https://github.com/user-attachments/assets/0af55a70-75bd-4625-9225-bb331d6f0da7" />
+<img width="1913" height="967" alt="image" src="https://github.com/user-attachments/assets/04baa877-1376-4f10-a824-43f32d2c556f" />
+
 
 
 ## Features
@@ -32,7 +33,8 @@ A web application built with Django for managing student records, attendance, an
    python manage.py runserver
    ```
 
-   <img width="1909" height="958" alt="image" src="https://github.com/user-attachments/assets/a9c9fa99-7a96-4263-a4b7-1eecfa4e60ec" />
+<img width="1912" height="959" alt="image" src="https://github.com/user-attachments/assets/81bb2340-bdef-4aa3-9b9c-144679f8b429" />
+
 
 
 ## License
