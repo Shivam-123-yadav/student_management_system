@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db import IntegrityError
 from django.http import JsonResponse
+from django.core.paginator import Paginator
 from .models import Student, Parent, Notification, Teacher, Department, Subject, Expense, Timetable
 
 # Decorator to check if user is superuser
@@ -752,9 +753,27 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Exam
 
 # List all exams
+@login_required
 def exam_list(request):
-    exams = Exam.objects.all()
-    return render(request, "exam.html", {"exams": exams})
+    exams = Exam.objects.all().order_by('date')
+    paginator = Paginator(exams, 10)  # Show 10 exams per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Calculate summary counts
+    total_exams = exams.count()
+    completed_exams = exams.filter(status='Completed').count()
+    ongoing_exams = exams.filter(status='Ongoing').count()
+    upcoming_exams = exams.filter(status='Upcoming').count()
+    
+    context = {
+        'exams': page_obj,
+        'total_exams': total_exams,
+        'completed_exams': completed_exams,
+        'ongoing_exams': ongoing_exams,
+        'upcoming_exams': upcoming_exams,
+    }
+    return render(request, "exam.html", context)
 
 # Add new exam
 def add_exam(request):
