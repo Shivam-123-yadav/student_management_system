@@ -6,7 +6,7 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 """
 from django.contrib import admin
 from django.urls import include, path
-from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, PasswordResetConfirmView, PasswordResetCompleteView
 from student import views as student_views
 
 urlpatterns = [
@@ -16,7 +16,9 @@ urlpatterns = [
     # Use the project's custom login/logout views to ensure consistent behavior
     path('login/', student_views.login_view, name='login'),
     path('logout/', student_views.logout_view, name='logout'),
-    path('forgot-password/', PasswordResetView.as_view(template_name='forgot-password.html'), name='forgot-password'),  # Forgot Password URL
+    path('forgot-password/', PasswordResetView.as_view(template_name='forgot-password.html', success_url='/reset/done/'), name='forgot-password'),  # Forgot Password URL
+    path('reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(template_name='password_reset_confirm.html'), name='password_reset_confirm'),
+    path('reset/done/', PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'), name='password_reset_complete'),
     # Include Django's auth URL patterns (password reset confirm, complete, etc.)
     # keep default auth urls but map accounts/login to our custom view for consistency
     path('accounts/login/', student_views.login_view, name='accounts_login'),
