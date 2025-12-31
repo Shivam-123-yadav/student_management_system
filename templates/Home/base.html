@@ -132,8 +132,10 @@
                         <ul>
                            <li><a href="{% url 'student_list' %}">Student List</a></li>
                            <!-- <li><a href="{% url 'student_list' %}">Student View</a></li> -->
+                            {% if user.is_superuser %}
                            <li><a href="{% url 'add_student' %}">Student Add</a></li>
                            <!-- <li><a href="{% url 'student_list' %}">Student Edit</a></li> -->
+                            {% endif %}
                         </ul>
                      </li>
                      <li class="submenu">
@@ -141,24 +143,30 @@
                         <ul>
                            <li><a href="{% url 'teachers' %}">Teacher List</a></li>
                            <!-- <li><a href="teacher-details.html">Teacher View</a></li> -->
+                            {% if user.is_superuser %}
                            <li><a href="{% url 'add_teacher_page' %}">Teacher Add</a></li>
                            <!-- <li><a href="edit-teacher.html">Teacher Edit</a></li> -->
+                            {% endif %}
                         </ul>
                      </li>
                      <li class="submenu">
                         <a href="/"><i class="fas fa-building"></i> <span> Departments</span> <span class="menu-arrow"></span></a>
                         <ul>
                            <li><a href="{% url 'departments' %}">Department List</a></li>
+                           {% if user.is_superuser %}
                            <li><a href="{% url 'add_department' %}">Department Add</a></li>
                            <!-- <li><a href="#">Department Edit</a></li> -->
+                            {% endif %}
                         </ul>
                      </li>
                      <li class="submenu">
                         <a href="/"><i class="fas fa-book-reader"></i> <span> Subjects</span> <span class="menu-arrow"></span></a>
                         <ul>
                            <li><a href="{% url 'subjects' %}">Subject List</a></li>
+                           {% if user.is_superuser %}
                            <li><a href="{% url 'add_subject' %}">Subject Add</a></li>
                            <!-- <li><a href="#">Subject Edit</a></li> -->
+                            {% endif %}
                         </ul>
                      </li>
                      <li class="menu-title">
@@ -170,9 +178,11 @@
                            <li><a href="{% url 'fees_collections' %}">Fees Collection</a></li>
                            <li><a href="{% url 'expenses' %}">Expenses</a></li>
                            <li><a href="{% url 'salary' %}">Salary</a></li>
+                           {% if user.is_superuser %}
                            <li><a href="{% url 'add_fees_collection' %}">Add Fees</a></li>
                            <li><a href="{% url 'add_expenses' %}">Add Expenses</a></li>
                            <li><a href="{% url 'add_salary' %}">Add Salary</a></li>
+                           {% endif %}
                         </ul>
                      </li>
                      <li class="menu-title">
@@ -184,7 +194,7 @@
                            <li><a href="{% url 'login' %}">Login</a></li>
                            <li><a href="{% url 'signup' %}">Register</a></li>
                            <li><a href="{% url 'forgot-password' %}">Forgot Password</a></li>
-                           <li><a href="{% url 'index' %}">Error Page</a></li>
+                           <!-- <li><a href="{% url 'index' %}">Error Page</a></li> -->
                         </ul>
                      </li>
 
