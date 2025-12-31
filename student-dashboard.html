@@ -1,0 +1,258 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+
+<!-- Hidden element to store chart data for JavaScript -->
+<div id="chart-data" style="display:none;">{{ chart_data|safe }}</div>
+
+<div class="page-wrapper">
+<div class="content container-fluid">
+
+<div class="page-header">
+<div class="row">
+<div class="col-sm-12">
+<h3 class="page-title">Welcome to Dashboard!</h3>
+<ul class="breadcrumb">
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+<li class="breadcrumb-item active">Student Dashboard</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+<div class="row">
+<div class="col-xl-3 col-sm-6 col-12 d-flex">
+<div class="card bg-nine w-100">
+<div class="card-body">
+<div class="db-widgets d-flex justify-content-between align-items-center">
+<div class="db-icon">
+<i class="fas fa-book-open"></i>
+</div>
+<div class="db-info">
+<h3>{{ total_subjects|default:0 }}</h3>
+<h6>All Subjects</h6>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="col-xl-3 col-sm-6 col-12 d-flex">
+<div class="card bg-six w-100">
+<div class="card-body">
+<div class="db-widgets d-flex justify-content-between align-items-center">
+<div class="db-icon">
+<i class="fas fa-graduation-cap"></i>
+</div>
+<div class="db-info">
+<h3>{{ total_exams|default:0 }}</h3>
+<h6>Total Exams</h6>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="col-xl-3 col-sm-6 col-12 d-flex">
+<div class="card bg-ten w-100">
+<div class="card-body">
+<div class="db-widgets d-flex justify-content-between align-items-center">
+<div class="db-icon">
+<i class="fas fa-users"></i>
+</div>
+<div class="db-info">
+<h3>{{ total_students|default:0 }}</h3>
+<h6>Total Students</h6>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="col-xl-3 col-sm-6 col-12 d-flex">
+<div class="card bg-eleven w-100">
+<div class="card-body">
+<div class="db-widgets d-flex justify-content-between align-items-center">
+<div class="db-icon">
+<i class="fas fa-chalkboard-teacher"></i>
+</div>
+<div class="db-info">
+<h3>{{ total_teachers|default:0 }}</h3>
+<h6>Total Teachers</h6>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<div class="row">
+<div class="col-12 col-lg-12 col-xl-9">
+<div class="card flex-fill">
+<div class="card-header">
+<div class="row align-items-center">
+<div class="col-6">
+<h5 class="card-title">Today’s Lesson</h5>
+</div>
+<div class="col-6">
+<span class="float-right view-link"><a href="{% url 'time_table' %}">View All</a></span>
+</div>
+</div>
+</div>
+<div class="dash-circle">
+<div class="row">
+{% if todays_lessons %}
+  {% for lesson in todays_lessons %}
+  <div class="col-12 col-lg-6 col-xl-6 dash-widget3">
+    <div class="card-body dash-widget1">
+      <div class="circle-bar circle-bar2">
+        <div class="circle-graph2" data-percent="60">
+          <b>60%</b>
+        </div>
+        <h6>Lesson Ongoing</h6>
+        <h4>{{ lesson.start_time|time:"H:i" }}</h4>
+      </div>
+      <div class="dash-details">
+        <h4>{{ lesson.subject }}</h4>
+        <ul>
+          <li><i class="fas fa-clock"></i> {{ lesson.start_time|time:"H:i" }} - {{ lesson.end_time|time:"H:i" }}</li>
+          <li><i class="fas fa-book-open"></i> Class {{ lesson.class_name }}</li>
+          <li><i class="fas fa-user"></i> {{ lesson.teacher.first_name }} {{ lesson.teacher.last_name }}</li>
+          <li><i class="fas fa-calendar"></i> {{ lesson.get_day_display }}</li>
+        </ul>
+        <div class="dash-btn">
+          <a href="{% url 'time_table' %}" class="btn btn-info">View Timetable</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="col-12">
+    <div class="alert alert-info">
+      <p>No lessons scheduled for today. <a href="{% url 'time_table' %}">View full timetable</a></p>
+    </div>
+  </div>
+{% endif %}
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-12 col-lg-12 col-xl-8 d-flex">
+<div class="card flex-fill">
+<div class="card-header">
+<div class="row align-items-center">
+<div class="col-6">
+<h5 class="card-title">Learning Activity</h5>
+</div>
+<div class="col-6">
+<ul class="list-inline-group text-right mb-0 pl-0">
+<li class="list-inline-item">
+<div class="form-group mb-0 amount-spent-select">
+<select class="form-control form-control-sm">
+<option>Weekly</option>
+<option>Monthly</option>
+<option>Yearly</option>
+</select>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="card-body">
+<div id="apexcharts-area"></div>
+</div>
+</div>
+</div>
+<div class="col-12 col-lg-12 col-xl-4 d-flex">
+<div class="card flex-fill">
+<div class="card-header">
+<h5 class="card-title">Learning History</h5>
+</div>
+<div class="card-body">
+<div class="teaching-card">
+<ul class="activity-feed">
+{% if recent_activities %}
+  {% for activity in recent_activities %}
+  <li class="feed-item">
+    <div class="feed-date1">{{ activity.created_at|date:"M d, H:i" }}</div>
+    <span class="feed-text1"><a>{{ activity.user.username }}</a></span>
+    <p><span>{{ activity.message|truncatewords:15 }}</span></p>
+  </li>
+  {% endfor %}
+{% else %}
+  <li class="feed-item">
+    <p>No learning history available</p>
+  </li>
+{% endif %}
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="col-12 col-lg-12 col-xl-3 d-flex">
+<div class="card flex-fill">
+<div class="card-header">
+<div class="row align-items-center">
+<div class="col-12">
+<h5 class="card-title">Calendar</h5>
+</div>
+</div>
+</div>
+<div class="card-body">
+<div id="calendar-doctor" class="calendar-container"></div>
+<div class="calendar-info calendar-info1">
+{% if todays_lessons %}
+  {% for lesson in todays_lessons %}
+  <div class="calendar-details">
+    <p>{{ lesson.start_time|time:"H:i" }}</p>
+    <h6 class="calendar-blue d-flex justify-content-between align-items-center">{{ lesson.subject }} <span>{{ lesson.start_time|time:"H:i" }} - {{ lesson.end_time|time:"H:i" }}</span></h6>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="calendar-details">
+    <p>No Class</p>
+    <h6 class="calendar-blue d-flex justify-content-between align-items-center">No lessons scheduled for today</h6>
+  </div>
+{% endif %}
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<footer>
+<p>Copyright © 2025 Dreamguys.</p>
+</footer>
+
+</div>
+
+</div>
+
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+
+<script src="{% static 'assets/plugins/apexchart/apexcharts.min.js' %}"></script>
+<script src="{% static 'assets/plugins/apexchart/chart-data.js' %}"></script>
+
+<script src="{% static 'assets/plugins/simple-calendar/jquery.simple-calendar.js' %}"></script>
+<script src="{% static 'assets/js/calander.js' %}"></script>
+
+<script src="{% static 'assets/js/circle-progress.min.js' %}"></script>
+
+<script src="{% static 'assets/js/script.js' %}"></script>
+</body>
+
+<!-- Mirrored from preschool.dreamguystech.com/html-template/student-dashboard.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 28 Oct 2021 11:11:43 GMT -->
+</html>
+
+{% endblock %}

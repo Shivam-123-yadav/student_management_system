@@ -1,0 +1,228 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8 px-4">
+    <div class="max-w-7xl mx-auto">
+
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-10" style="padding: 50px">
+            <div>
+                <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-700">
+                    Hostel Management System
+                </h1>
+                <nav class="flex mt-3 text-sm text-gray-600">
+                    <a href="{% url 'dashboard' %}" class="hover:text-blue-600">Dashboard</a>
+                    <span class="mx-2">/</span>
+                    <span class="text-blue-600 font-bold">Hostel</span>
+                </nav>
+            </div>
+
+            <!-- Go Back Button -->
+            <a href="{% url 'dashboard' %}" 
+               class="mt-5 sm:mt-0 flex items-center space-x-3 px-6 py-3.5 bg-white border-2 border-gray-300 rounded-xl shadow-md hover:shadow-lg hover:border-gray-400 hover:bg-gray-50 font-medium text-gray-700 transition-all duration-200 transform hover:-translate-x-1">
+                <i class="fas fa-arrow-left text-blue-600"></i>
+                <span>Back to Dashboard</span>
+            </a>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 text-white shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-100 text-sm">Total Hostels</p>
+                        <p class="text-5xl font-extrabold mt-2">{{ hostels|length }}</p>
+                    </div>
+                    <i class="fas fa-building text-6xl opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-gradient-to-r from-pink-500 to-rose-500 rounded-2xl p-6 text-white shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-pink-100 text-sm">Girls Hostel</p>
+                        <p class="text-5xl font-extrabold mt-2">{{ girls_hostels|default:"0" }}</p>
+                    </div>
+                    <i class="fas fa-female text-6xl opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl p-6 text-white shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-cyan-100 text-sm">Boys Hostel</p>
+                        <p class="text-5xl font-extrabold mt-2">{{ boys_hostels|default:"0" }}</p>
+                    </div>
+                    <i class="fas fa-male text-6xl opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-6 text-white shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-purple-100 text-sm">Total Rooms</p>
+                        <p class="text-5xl font-extrabold mt-2">{{ total_rooms|default:"0" }}</p>
+                    </div>
+                    <i class="fas fa-door-open text-6xl opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Add Hostel Form -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-6">
+                        <h2 class="text-2xl font-bold text-white flex items-center">
+                            <i class="fas fa-plus-circle mr-3 text-3xl"></i>
+                            Add New Hostel
+                        </h2>
+                    </div>
+
+                    <div class="p-8">
+                        <form method="POST" class="space-y-6">
+                            {% csrf_token %}
+
+                            <!-- Hostel Name -->
+                            <div class="relative">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Hostel Name <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <i class="fas fa-hotel text-blue-600"></i>
+                                    </div>
+                                    <input type="text" name="hostel_name" required placeholder="e.g. Vivekananda Boys Hostel, Saraswati Girls Hostel"
+                                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition text-lg">
+                                </div>
+                            </div>
+
+                            <!-- Type -->
+                            <div class="relative">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Hostel Type <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <i class="fas fa-venus-mars text-purple-600"></i>
+                                    </div>
+                                    <select name="hostel_type" required
+                                            class="w-full pl-12 pr-10 py-4 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition text-lg appearance-none bg-white">
+                                        <option value="Boys">Boys Hostel</option>
+                                        <option value="Girls">Girls Hostel</option>
+                                        <option value="Mixed">Mixed Hostel</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-chevron-down text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Total Rooms -->
+                            <div class="relative">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Total Rooms <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <i class="fas fa-door-closed text-blue-600"></i>
+                                    </div>
+                                    <input type="number" name="total_rooms" min="1" required placeholder="50"
+                                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition text-lg">
+                                </div>
+                            </div>
+
+                            <button type="submit"
+                                    class="w-full py-5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold rounded-xl shadow-xl transform hover:scale-105 transition duration-300 flex items-center justify-center space-x-3 text-lg">
+                                <i class="fas fa-building"></i>
+                                <span>Add Hostel</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hostel List -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-6">
+                        <h2 class="text-2xl font-bold text-white flex items-center justify-between">
+                            <span><i class="fas fa-list-alt mr-3"></i>All Hostels</span>
+                            <span class="text-blue-100 text-sm font-medium">{{ hostels|length }} Hostel{{ hostels|length|pluralize }}</span>
+                        </h2>
+                    </div>
+
+                    {% if hostels %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-8">
+                        {% for h in hostels %}
+                        <div class="group relative bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-l-4 
+                                     {% if h.hostel_type == 'Boys' %}border-cyan-500
+                                     {% elif h.hostel_type == 'Girls' %}border-pink-500
+                                     {% else %}border-purple-500{% endif %}">
+
+                            <!-- Delete Button (Hover) -->
+                            {% if user.is_superuser %}
+                            <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition">
+                                <a href="{% url 'delete_hostel' h.id %}" 
+                                   onclick="return confirm('Delete {{ h.hostel_name }} permanently?')"
+                                   class="p-3 bg-red-500 hover:bg-red-600 text-white rounded-xl shadow hover:shadow-xl transform hover:scale-110 transition">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                            {% endif %}
+
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h3 class="text-2xl font-bold text-gray-800 group-hover:text-blue-700 transition">
+                                        {{ h.hostel_name }}
+                                    </h3>
+                                    <div class="flex items-center mt-3 text-gray-600">
+                                        {% if h.hostel_type == 'Boys' %}
+                                            <i class="fas fa-male text-cyan-600 mr-2"></i>
+                                        {% elif h.hostel_type == 'Girls' %}
+                                            <i class="fas fa-female text-pink-600 mr-2"></i>
+                                        {% else %}
+                                            <i class="fas fa-venus-mars text-purple-600 mr-2"></i>
+                                        {% endif %}
+                                        <span class="font-semibold">{{ h.hostel_type }} Hostel</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-4xl font-extrabold text-blue-600">{{ h.total_rooms }}</p>
+                                    <p class="text-sm text-gray-600">Rooms</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 pt-4 border-t border-gray-200">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">Capacity</span>
+                                    <span class="font-bold text-gray-700">{{ h.total_rooms }} Students</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="p-20 text-center">
+                        <i class="fas fa-home text-9xl text-gray-300 mb-8 block"></i>
+                        <h3 class="text-3xl font-bold text-gray-700 mb-4">No Hostels Added Yet!</h3>
+                        <p class="text-gray-500 text-lg">Start adding boarding facilities for students</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Note -->
+        <div class="mt-16 text-center">
+            <p class="text-sm text-gray-500">
+                Hostel allocation, fees & warden management coming soon!
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Icons & Tailwind -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
+{% endblock %}

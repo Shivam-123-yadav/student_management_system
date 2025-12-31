@@ -1,0 +1,169 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="min-h-screen bg-gray-50 py-8 px-4">
+    <div class="max-w-5xl mx-auto">
+
+        <!-- Header with Go Back Button -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Add Fees Collection</h1>
+                <nav class="flex mt-2 text-sm text-gray-600">
+                    <a href="{% url 'dashboard' %}" class="hover:text-indigo-600">Dashboard</a>
+                    <span class="mx-2">/</span>
+                    <a href="{% url 'fees_collections' %}" class="hover:text-indigo-600">Fees Collections</a>
+                    <span class="mx-2">/</span>
+                    <span class="text-green-600 font-bold">New Collection</span>
+                </nav>
+            </div>
+
+            <!-- Premium Go Back Button -->
+            <a href="{% url 'fees_collections' %}" 
+               class="flex items-center space-x-3 px-6 py-3.5 bg-white border-2 border-gray-300 rounded-xl shadow-md hover:shadow-lg hover:border-gray-400 hover:bg-gray-50 font-medium text-gray-700 transition-all duration-200 transform hover:-translate-x-1">
+                <i class="fas fa-arrow-left text-green-600"></i>
+                <span>Back to Collections</span>
+            </a>
+        </div>
+
+        <!-- Main Form Card -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div class="bg-gradient-to-r from-green-600 to-emerald-600 px-8 py-7">
+                <h2 class="text-2xl font-bold text-white flex items-center">
+                    <i class="fas fa-hand-holding-usd mr-4 text-3xl"></i>
+                    Record New Fees Payment
+                </h2>
+                <p class="text-green-100 mt-2">Collect fees from student with full details</p>
+            </div>
+
+            <form method="POST" class="p-8 space-y-8">
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                    <!-- Student Select -->
+                    <div class="relative lg:col-span-1">
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                            Student <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-user-graduate text-green-600 text-xl"></i>
+                            </div>
+                            <select name="student" required 
+                                    class="w-full pl-12 pr-10 py-4 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:ring-4 focus:ring-green-100 transition text-lg appearance-none bg-white">
+                                <option value="">-- Select Student --</option>
+                                {% for s in students %}
+                                    <option value="{{ s.id }}">
+                                        {{ s.name }} 
+                                        {% if s.class_name %}({{ s.class_name }}){% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-chevron-down text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Amount -->
+                    <div class="relative">
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                            Amount Paid (₹) <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-rupee-sign text-green-600 text-xl"></i>
+                            </div>
+                            <input type="number" name="amount" required min="1" step="1"
+                                   placeholder="15000"
+                                   class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:ring-4 focus:ring-green-100 transition text-lg font-bold text-green-700">
+                        </div>
+                    </div>
+
+                    <!-- Payment Mode -->
+                    <div class="relative">
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                            Payment Mode
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-credit-card text-emerald-600 text-xl"></i>
+                            </div>
+                            <select name="mode" class="w-full pl-12 pr-10 py-4 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition text-lg">
+                                <option>Cash</option>
+                                <option>UPI</option>
+                                <option>Bank Transfer</option>
+                                <option>Cheque</option>
+                                <option>Card</option>
+                                <option>Online Payment</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-chevron-down text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Date -->
+                    <div class="relative">
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                            Payment Date <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-calendar-check text-green-600 text-xl"></i>
+                            </div>
+                            <input type="date" name="date" required value="{% now 'Y-m-d' %}"
+                                   class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:ring-4 focus:ring-green-100 transition text-lg">
+                        </div>
+                    </div>
+
+                    <!-- Receipt Number -->
+                    <div class="relative lg:col-span-1">
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                            Receipt Number <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-receipt text-emerald-600 text-xl"></i>
+                            </div>
+                            <input type="text" name="receipt_no" required
+                                   placeholder="e.g. REC-2025-001"
+                                   value="REC-{{ current_year }}-{{ next_receipt|default:'001' }}"
+                                   class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition text-lg font-mono">
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2 ml-1">Auto-generated format: REC-2025-001</p>
+                    </div>
+
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-between pt-8 border-t border-gray-200">
+                    <a href="{% url 'fees_collections' %}" 
+                       class="px-10 py-4 border-2 border-gray-300 rounded-xl hover:bg-gray-50 font-medium transition">
+                        Cancel
+                    </a>
+                    <button type="submit" 
+                            class="px-14 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg transform hover:scale-105 transition duration-300 flex items-center space-x-3">
+                        <i class="fas fa-save text-xl"></i>
+                        <span>Save & Generate Receipt</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Success Tip -->
+        <div class="mt-10 text-center">
+            <div class="inline-flex items-center space-x-3 bg-green-50 text-green-700 px-6 py-4 rounded-xl">
+                <i class="fas fa-check-circle text-2xl"></i>
+                <p class="font-medium">After saving, a printable receipt will be generated automatically!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Icons & Tailwind -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
+{% endblock %}

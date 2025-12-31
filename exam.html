@@ -1,0 +1,188 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8 px-4">
+    <div class="max-w-7xl mx-auto">
+
+        <!-- Header with Go Back + Add Exam -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-10" style="padding: 50px">
+            <div>
+                <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-700">
+                    Exam Management
+                </h1>
+                <nav class="flex mt-3 text-sm text-gray-600">
+                    <a href="{% url 'dashboard' %}" class="hover:text-indigo-600">Dashboard</a>
+                    <span class="mx-2">/</span>
+                    <span class="text-indigo-600 font-bold">Exams</span>
+                </nav>
+            </div>
+
+            <div class="mt-5 sm:mt-0 flex items-center space-x-4">
+                <!-- Go Back Button -->
+                <a href="{% url 'dashboard' %}" 
+                   class="flex items-center space-x-3 px-6 py-3.5 bg-white border-2 border-gray-300 rounded-xl shadow-md hover:shadow-lg hover:border-gray-400 hover:bg-gray-50 font-medium text-gray-700 transition-all duration-200 transform hover:-translate-x-1">
+                    <i class="fas fa-arrow-left text-indigo-600"></i>
+                    <span>Back to Dashboard</span>
+                </a>
+
+                {% if user.is_superuser %}
+                <!-- Add Exam Button -->
+                <a href="{% url 'add_exam' %}" 
+                   class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold rounded-xl shadow-lg flex items-center space-x-3 transform hover:scale-105 transition duration-300">
+                    <i class="fas fa-plus"></i>
+                    <span>Add New Exam</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+            <div class="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl p-6 text-white shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-100 text-sm">Total Exams</p>
+                        <p class="text-5xl font-extrabold mt-2">{{ exams|length }}</p>
+                    </div>
+                    <i class="fas fa-clipboard-list text-6xl opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl p-6 text-white shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-100 text-sm">Completed</p>
+                        <p class="text-5xl font-extrabold mt-2">{{ completed_exams|default:"0" }}</p>
+                    </div>
+                    <i class="fas fa-check-circle text-6xl opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-6 text-white shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-orange-100 text-sm">Ongoing</p>
+                        <p class="text-5xl font-extrabold mt-2">{{ ongoing_exams|default:"0" }}</p>
+                    </div>
+                    <i class="fas fa-hourglass-half text-6xl opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-6 text-white shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-purple-100 text-sm">Upcoming</p>
+                        <p class="text-5xl font-extrabold mt-2">{{ upcoming_exams|default:"0" }}</p>
+                    </div>
+                    <i class="fas fa-calendar-alt text-6xl opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exam List -->
+        {% if exams %}
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden" style="padding: 50px">
+            <div class="px-8 py-6 bg-gradient-to-r from-indigo-600 to-purple-600" >
+                <h2 class="text-2xl font-bold text-white flex items-center">
+                    <i class="fas fa-list-alt mr-3"></i>
+                    All Scheduled Exams
+                </h2>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b-2 border-gray-200">
+                        <tr>
+                            <th class="px-6 py-5 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">ID</th>
+                            <th class="px-6 py-5 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Exam Name</th>
+                            <th class="px-6 py-5 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-5 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Class</th>
+                            <th class="px-6 py-5 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-5 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for exam in exams %}
+                        <tr class="hover:bg-indigo-50 transition duration-200 group">
+                            <td class="px-6 py-5 text-sm font-medium text-gray-600">#{{ exam.id }}</td>
+                            <td class="px-6 py-5">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
+                                        E{{ exam.id }}
+                                    </div>
+                                    <div>
+                                        <p class="text-lg font-bold text-gray-900">{{ exam.name }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-5 text-lg font-semibold text-indigo-700">
+                                {{ exam.date|date:"d M, Y" }}
+                            </td>
+                            <td class="px-6 py-5">
+                                <span class="px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full text-sm font-bold">
+                                    Class {{ exam.exam_class }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-5">
+                                {% if exam.status == "Completed" %}
+                                    <span class="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-bold">Completed</span>
+                                {% elif exam.status == "Ongoing" %}
+                                    <span class="px-4 py-2 bg-orange-100 text-orange-800 rounded-full text-sm font-bold">Ongoing</span>
+                                {% else %}
+                                    <span class="px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm font-bold">Upcoming</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-5 text-right">
+                                <div class="flex items-center justify-end space-x-3">
+                                    {% if user.is_superuser %}
+                                    <a href="{% url 'edit_exam' exam.id %}" 
+                                       class="p-3 bg-white border border-gray-300 rounded-xl shadow hover:bg-indigo-50 text-indigo-600 hover:text-indigo-800 transition transform hover:scale-110">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{% url 'delete_exam' exam.id %}" method="POST" class="inline">
+                                        {% csrf_token %}
+                                        <button type="submit" onclick="return confirm('Delete {{ exam.name }} permanently?')"
+                                                class="p-3 bg-white border border-gray-300 rounded-xl shadow hover:bg-red-50 text-red-600 hover:text-red-800 transition transform hover:scale-110">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- Beautiful Empty State -->
+        <div class="bg-white rounded-2xl shadow-xl p-20 text-center">
+            <div class="max-w-md mx-auto">
+                <i class="fas fa-clipboard-check text-9xl text-gray-300 mb-8 block"></i>
+                <h3 class="text-3xl font-bold text-gray-700 mb-4">No Exams Scheduled Yet!</h3>
+                <p class="text-gray-500 text-lg mb-8">
+                    Start planning your academic calendar by creating term exams, unit tests, or final assessments.
+                </p>
+                <a href="{% url 'add_exam' %}" 
+                   class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition duration-300">
+                    <i class="fas fa-plus mr-3"></i>
+                    Schedule First Exam
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Footer Tip -->
+        <div class="mt-16 text-center">
+            <p class="text-sm text-gray-500">
+                Exams are linked with result management & student reports
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Icons & Tailwind -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
+{% endblock %}

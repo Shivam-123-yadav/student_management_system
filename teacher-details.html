@@ -1,0 +1,184 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% load mathfilters %}  <!-- Yeh line zaroori hai! -->
+
+{% block body %}
+
+<div class="min-h-screen bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-50 py-12 px-4" style="padding: 50px">
+    <div class="max-w-6xl mx-auto">
+
+        <!-- Header -->
+        <div class="mb-10">
+            <h1 class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-cyan-700 mb-4">
+                Teacher Profile
+            </h1>
+            <nav class="flex text-sm text-gray-600">
+                <a href="{% url 'dashboard' %}" class="hover:text-teal-600">Dashboard</a>
+                <span class="mx-3">/</span>
+                <a href="{% url 'teachers' %}" class="hover:text-teal-600">Teachers</a>
+                <span class="mx-3">/</span>
+                <span class="text-teal-600 font-bold">Profile</span>
+            </nav>
+        </div>
+
+        <!-- Main Profile Card -->
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+
+            <!-- Hero Background -->
+            <div class="h-64 bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-700 relative">
+                <div class="absolute -bottom-20 left-1/2 transform -translate-x-1/2">
+                    <div class="relative">
+                        <div class="w-40 h-40 rounded-full border-8 border-white shadow-2xl overflow-hidden bg-white">
+                            {% if teacher.teacher_image %}
+                                <img src="{{ teacher.teacher_image.url }}" 
+                                     alt="{{ teacher.first_name }} {{ teacher.last_name }}"
+                                     class="w-full h-full object-cover">
+                            {% else %}
+                                <img src="{% static 'assets/img/profiles/avatar-02.jpg' %}" 
+                                     alt="Teacher"
+                                     class="w-full h-full object-cover">
+                            {% endif %}
+                        </div>
+                        <div class="absolute bottom-3 right-3 w-10 h-10 bg-green-500 rounded-full border-4 border-white shadow-lg"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Name & Info -->
+            <div class="pt-24 pb-10 text-center px-8">
+                <h2 class="text-4xl font-extrabold text-gray-800">
+                    {{ teacher.first_name }} {{ teacher.last_name }}
+                </h2>
+                <p class="text-2xl font-semibold text-teal-600 mt-2">
+                    {{ teacher.subject|default:"Class Teacher" }}
+                </p>
+                <div class="flex justify-center mt-4 space-x-6">
+                    <span class="px-6 py-2 bg-teal-100 text-teal-800 rounded-full font-bold text-sm">
+                        ID: {{ teacher.teacher_id }}
+                    </span>
+                    <span class="px-6 py-2 bg-cyan-100 text-cyan-800 rounded-full font-bold text-sm">
+                        Joined {{ teacher.joining_date|date:"Y" }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-center space-x-6 pb-10 border-b border-gray-200">
+                <a href="mailto:{{ teacher.email }}" class="flex items-center space-x-3 px-8 py-4 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-bold rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+                    <i class="fas fa-envelope"></i> Email
+                </a>
+                <a href="tel:{{ teacher.mobile }}" class="flex items-center space-x-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+                    <i class="fas fa-phone"></i> Call
+                </a>
+                <a href="{% url 'edit_teacher_page' slug=teacher.teacher_id %}" class="flex items-center space-x-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </a>
+            </div>
+
+            <!-- Info Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-10">
+
+                <!-- Personal Info -->
+                <div class="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-2xl p-8 shadow-lg">
+                    <h3 class="text-xl font-bold text-teal-800 mb-6 flex items-center">
+                        <i class="fas fa-user-circle mr-3 text-2xl"></i> Personal Information
+                    </h3>
+                    <div class="space-y-5 text-gray-700">
+                        <div class="flex justify-between">
+                            <span class="font-medium">Gender</span>
+                            <span class="font-bold text-teal-700">{{ teacher.gender|capfirst|default:"Not Specified" }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">Date of Birth</span>
+                            <span class="font-bold text-teal-700">{{ teacher.date_of_birth|date:"d M, Y"|default:"—" }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">Age</span>
+                            <span class="font-bold text-teal-700">
+                                {% now "Y" as current_year %}
+                                {{ current_year|sub:teacher.date_of_birth|date:"Y" }} years
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 shadow-lg">
+                    <h3 class="text-xl font-bold text-blue-800 mb-6 flex items-center">
+                        <i class="fas fa-address-book mr-3 text-2xl"></i> Contact Details
+                    </h3>
+                    <div class="space-y-5">
+                        <div class="flex items-start space-x-4">
+                            <i class="fas fa-envelope text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="font-medium text-sm text-gray-600">Email</p>
+                                <p class="font-bold text-blue-700">{{ teacher.email }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <i class="fas fa-phone text-blue-600"></i>
+                            <div>
+                                <p class="font-medium text-sm text-gray-600">Mobile</p>
+                                <p class="font-bold text-blue-700">{{ teacher.mobile }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <i class="fas fa-map-marker-alt text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="font-medium text-sm text-gray-600">Address</p>
+                                <p class="font-bold text-blue-700">{{ teacher.address|default:"Not Provided" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Academic Info -->
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 shadow-lg">
+                    <h3 class="text-xl font-bold text-purple-800 mb-6 flex items-center">
+                        <i class="fas fa-graduation-cap mr-3 text-2xl"></i> Academic Details
+                    </h3>
+                    <div class="space-y-5 text-gray-700">
+                        <div class="flex justify-between">
+                            <span class="font-medium">Subject</span>
+                            <span class="font-bold text-purple-700">{{ teacher.subject|default:"N/A" }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">Joining Date</span>
+                            <span class="font-bold text-purple-700">{{ teacher.joining_date|date:"d M, Y" }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">Experience</span>
+                            <span class="font-bold text-purple-700">
+                                {% now "Y" as current_year %}
+                                {{ current_year|sub:teacher.joining_date|date:"Y" }} years
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Quote Footer -->
+            <div class="bg-gradient-to-r from-teal-600 to-cyan-600 px-10 py-8 text-center">
+                <p class="text-white font-medium text-lg italic">
+                    "The influence of a good teacher can never be erased."
+                </p>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="mt-12 text-center">
+            <a href="{% url 'teachers' %}" 
+               class="inline-flex items-center space-x-3 px-10 py-5 bg-white border-2 border-teal-600 text-teal-600 font-bold rounded-xl shadow-lg hover:bg-teal-50 hover:shadow-xl transform hover:scale-105 transition duration-300">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Teachers List</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- FontAwesome & Tailwind -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="min-h-screen bg-gray-50 py-8 px-4">
+    <div class="max-w-3xl mx-auto">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Edit Department</h1>
+                <nav class="flex mt-2 text-sm text-gray-600">
+                    <a href="{% url 'dashboard' %}" class="hover:text-indigo-600">Dashboard</a>
+                    <span class="mx-2">/</span>
+                    <a href="{% url 'departments' %}" class="hover:text-indigo-600">Departments</a>
+                    <span class="mx-2">/</span>
+                    <span class="text-indigo-600 font-medium">Edit</span>
+                </nav>
+
+                
+            </div>
+            <a href="{% url 'departments' %}" 
+               class="px-5 py-3 bg-white border border-gray-300 rounded-lg shadow hover:bg-gray-50 flex items-center space-x-2 transition">
+                Back to List
+            </a>
+        </div>
+
+        <!-- Current Department Card -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">
+                <div class="flex items-center space-x-5">
+                    <div class="w-20 h-20 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-3xl font-bold text-white shadow-lg">
+                        {{ department.name|slice:":2"|upper }}
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">{{ department.name }}</h2>
+                        {% if department.head %}
+                            <p class="text-indigo-100">HOD: <span class="font-semibold">{{ department.head }}</span></p>
+                        {% else %}
+                            <p class="text-indigo-200 italic">No HOD assigned</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Form -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-6">
+                <h2 class="text-2xl font-bold text-white flex items-center">
+                    Update Department Details
+                </h2>
+                <p class="text-emerald-100 mt-1">Make changes and save</p>
+            </div>
+
+            <form method="POST" class="p-8 space-y-8">
+                {% csrf_token %}
+
+                <!-- Department Name -->
+                <div class="relative">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        Department Name <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-building text-emerald-600 text-xl"></i>
+                        </div>
+                        <input 
+                            type="text" 
+                            name="name" 
+                            value="{{ department.name }}"
+                            required 
+                            class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition duration-200 text-lg font-medium"
+                        >
+                    </div>
+                </div>
+
+                <!-- Head of Department -->
+                <div class="relative">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        Head of Department (HOD)
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-user-tie text-purple-600 text-xl"></i>
+                        </div>
+                        <input 
+                            type="text" 
+                            name="head" 
+                            value="{{ department.head }}"
+                            placeholder="Leave empty if not assigned"
+                            class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition duration-200 text-lg"
+                        >
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 ml-1">You can also assign HOD from teacher profile later</p>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        Description
+                    </label>
+                    <textarea 
+                        name="description" 
+                        rows="6" 
+                        placeholder="Update description about this department..."
+                        class="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition duration-200 resize-none text-gray-700"
+                    >{{ department.description }}</textarea>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-between pt-8 border-t border-gray-200">
+                    <a href="{% url 'departments' %}" 
+                       class="px-8 py-4 border border-gray-300 rounded-xl hover:bg-gray-50 font-medium transition">
+                        Cancel
+                    </a>
+                    <button type="submit" 
+                            class="px-12 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold rounded-xl shadow-lg transform hover:scale-105 transition duration-300 flex items-center space-x-3">
+                        <i class="fas fa-save text-xl"></i>
+                        <span>Save Changes</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Success Tip -->
+        <div class="mt-10 text-center">
+            <p class="text-sm text-gray-500">
+                Changes will be reflected immediately across the system
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Icons & Tailwind -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
+{% endblock %}

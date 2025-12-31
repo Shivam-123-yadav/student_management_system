@@ -1,0 +1,165 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="min-h-screen bg-gray-50 py-8 px-4">
+    <div class="max-w-7xl mx-auto">
+
+        <!-- Header with Go Back + Add Expense -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8" style="padding: 50px">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Expenses Management</h1>
+                <nav class="flex mt-2 text-sm text-gray-600">
+                    <a href="{% url 'dashboard' %}" class="hover:text-indigo-600">Dashboard</a>
+                    <span class="mx-2">/</span>
+                    <span class="text-red-600 font-bold">Expenses</span>
+                </nav>
+            </div>
+
+            <div class="mt-4 sm:mt-0 flex items-center space-x-4">
+                <!-- Go Back Button -->
+                <a href="{% url 'dashboard' %}" 
+                   class="flex items-center space-x-3 px-6 py-3.5 bg-white border-2 border-gray-300 rounded-xl shadow-md hover:shadow-lg hover:border-gray-400 hover:bg-gray-50 font-medium text-gray-700 transition-all duration-200 transform hover:-translate-x-1">
+                    <i class="fas fa-arrow-left text-red-600"></i>
+                    <span>Back to Dashboard</span>
+                </a>
+
+                {% if user.is_superuser %}
+                <!-- Add Expense Button -->
+                <a href="{% url 'add_expenses' %}" 
+                   class="px-7 py-4 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-bold rounded-xl shadow-lg flex items-center space-x-3 transform hover:scale-105 transition duration-300">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Expense</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div class="px-8 py-7 bg-gradient-to-r from-red-600 to-rose-600">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center">
+                            <i class="fas fa-file-invoice-dollar mr-3 text-3xl"></i>
+                            All Expenses
+                        </h2>
+                        <p class="text-red-100 mt-1">Track every expenditure of your institution</p>
+                    </div>
+                    <div class="mt-5 lg:mt-0 bg-white/20 backdrop-blur rounded-xl px-6 py-4 text-right">
+                        <p class="text-red-100 text-sm">Total Expenses</p>
+                        <p class="text-4xl font-extrabold text-white">₹{{ total_expenses|default:"0" }}</p>
+                        <p class="text-red-200 text-xs mt-1">{{ expenses|length }} records</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b-2 border-gray-200">
+                        <tr>
+                            <th class="px-6 py-5 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">#</th>
+                            <th class="px-6 py-5 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Title</th>
+                            <th class="px-6 py-5 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Amount</th>
+                            <th class="px-6 py-5 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-5 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Category</th>
+                            <th class="px-6 py-5 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for exp in expenses %}
+                        <tr class="hover:bg-red-50 transition duration-200 group">
+                            <td class="px-6 py-5 text-sm font-medium text-gray-600">{{ forloop.counter }}</td>
+                            
+                            <td class="px-6 py-5">
+                                <p class="text-lg font-semibold text-gray-900">{{ exp.title }}</p>
+                                {% if exp.description %}
+                                    <p class="text-xs text-gray-500 mt-1">{{ exp.description|truncatechars:60 }}</p>
+                                {% endif %}
+                            </td>
+
+                            <td class="px-6 py-5">
+                                <span class="text-2xl font-bold text-red-600">₹{{ exp.amount }}</span>
+                            </td>
+
+                            <td class="px-6 py-5 text-sm text-gray-700">
+                                {{ exp.date|date:"d M, Y" }}
+                            </td>
+
+                            <td class="px-6 py-5">
+                                <span class="px-4 py-2 inline-flex text-xs font-bold rounded-full 
+                                    {% if exp.category == 'Salary' %}bg-purple-100 text-purple-800
+                                    {% elif exp.category == 'Electricity' %}bg-yellow-100 text-yellow-800
+                                    {% elif exp.category == 'Maintenance' %}bg-orange-100 text-orange-800
+                                    {% elif exp.category == 'Stationery' %}bg-blue-100 text-blue-800
+                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ exp.category|default:"Other" }}
+                                </span>
+                            </td>
+
+                            <td class="px-6 py-5 text-right">
+                                <div class="flex items-center justify-end space-x-3">
+                                    {% if user.is_superuser %}
+                                    <a href="{% url 'edit_expense' exp.id %}" 
+                                       class="text-indigo-600 hover:text-indigo-800 font-medium hover:underline">
+                                        Edit
+                                    </a>
+                                    <form action="{% url 'delete_expense' exp.id %}" method="POST" class="inline">
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                                onclick="return confirm('Delete this expense permanently?')"
+                                                class="text-red-600 hover:text-red-800 font-medium hover:underline">
+                                            Delete
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="px-6 py-20 text-center">
+                                <div class="text-gray-400">
+                                    <i class="fas fa-receipt text-8xl mb-6 block opacity-40"></i>
+                                    <p class="text-2xl font-medium text-gray-600">No expenses recorded yet</p>
+                                    <p class="text-sm mt-3 text-gray-500">Click "Add Expense" to start tracking!</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Summary Cards -->
+            {% if expenses %}
+            <div class="px-8 py-6 bg-gradient-to-r from-red-50 to-rose-50 border-t">
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-6 text-center">
+                    <div class="bg-white rounded-xl p-5 shadow">
+                        <p class="text-gray-600 text-sm">Total Expenses</p>
+                        <p class="text-3xl font-bold text-red-600">₹{{ total_expenses|default:"0" }}</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 shadow">
+                        <p class="text-gray-600 text-sm">This Month</p>
+                        <p class="text-3xl font-bold text-orange-600">₹{{ monthly_expense|default:"0" }}</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 shadow">
+                        <p class="text-gray-600 text-sm">Highest</p>
+                        <p class="text-2xl font-bold text-purple-700">₹{{ highest_expense|default:"0" }}</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 shadow">
+                        <p class="text-gray-600 text-sm">Transactions</p>
+                        <p class="text-3xl font-bold text-indigo-700">{{ expenses|length }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Icons & Tailwind -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
+{% endblock %}

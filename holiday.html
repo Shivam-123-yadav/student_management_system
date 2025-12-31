@@ -1,0 +1,211 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 px-4">
+    <div class="max-w-7xl mx-auto">
+
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-10" style="padding: 50px">
+            <div>
+                <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+                    Holiday Calendar 2025-26
+                </h1>
+                <nav class="flex mt-3 text-sm text-gray-600">
+                    <a href="{% url 'dashboard' %}" class="hover:text-indigo-600">Dashboard</a>
+                    <span class="mx-2">/</span>
+                    <span class="text-purple-600 font-bold">Holidays</span>
+                </nav>
+            </div>
+
+            <div class="mt-5 sm:mt-0 flex items-center space-x-4">
+                <a href="{% url 'dashboard' %}" 
+                   class="flex items-center space-x-3 px-6 py-3.5 bg-white border-2 border-gray-300 rounded-xl shadow-md hover:shadow-lg hover:border-gray-400 hover:bg-gray-50 font-medium text-gray-700 transition-all duration-200 transform hover:-translate-x-1">
+                    <i class="fas fa-arrow-left text-purple-600"></i>
+                    <span>Back to Dashboard</span>
+                </a>
+
+                {% if user.is_superuser %}
+                <a href="{% url 'add_holiday' %}" 
+                   class="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-xl shadow-lg flex items-center space-x-3 transform hover:scale-105 transition duration-300">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Holiday</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-6 text-white shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-purple-100 text-sm">Total Holidays</p>
+                        <p class="text-5xl font-extrabold mt-2">{{ holidays|length }}</p>
+                    </div>
+                    <i class="fas fa-calendar-day text-6xl opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-gradient-to-r from-indigo-500 to-blue-500 rounded-2xl p-6 text-white shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-indigo-100 text-sm">Upcoming</p>
+                        <p class="text-5xl font-extrabold mt-2">{{ upcoming_holidays|default:"0" }}</p>
+                    </div>
+                    <i class="fas fa-clock text-6xl opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-6 text-white shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-emerald-100 text-sm">This Month</p>
+                        <p class="text-5xl font-extrabold mt-2">{{ current_month_holidays|default:"0" }}</p>
+                    </div>
+                    <i class="fas fa-star text-6xl opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Holidays by Month -->
+        {% if holidays %}
+            {% regroup holidays by date__year_month as month_list %}
+            {% for month_group in month_list %}
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-5">
+                    <h3 class="text-2xl font-bold text-white flex items-center">
+                        <i class="fas fa-calendar-alt mr-3"></i>
+                        {{ month_group.grouper|date:"F Y" }}
+                        <span class="ml-4 text-indigo-100 text-sm font-medium">
+                            ({{ month_group.list|length }} Holiday{{ month_group.list|length|pluralize }})
+                        </span>
+                    </h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-8">
+                    {% for h in month_group.list %}
+                    <div class="group relative bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-l-4 
+                                 {% if h.date|date:'l' == 'Sunday' %}border-red-500
+                                 {% elif h.date|date:'l' == 'Saturday' %}border-orange-500
+                                 {% else %}border-purple-500{% endif %}">
+
+                        <!-- Edit & Delete Buttons (Top Right) -->
+                        <div class="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {% if user.is_superuser %}
+                            <button onclick="openEditModal({{ h.id }}, '{{ h.name|escapejs }}', '{{ h.date|date:'Y-m-d' }}', '{{ h.description|default:''|escapejs }}')"
+                                    class="p-2 bg-white rounded-lg shadow hover:bg-indigo-50 text-indigo-600 hover:text-indigo-800 transition">
+                                <i class="fas fa-edit text-sm"></i>
+                            </button>
+                            <form action="{% url 'delete_holiday' h.id %}" method="POST" class="inline">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('Delete {{ h.name|escapejs }} permanently?')"
+                                        class="p-2 bg-white rounded-lg shadow hover:bg-red-50 text-red-600 hover:text-red-800 transition">
+                                    <i class="fas fa-trash-alt text-sm"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+
+                        <div class="flex items-start justify-between pr-16">
+                            <div>
+                                <h4 class="text-xl font-bold text-gray-800 group-hover:text-purple-700 transition">
+                                    {{ h.name }}
+                                </h4>
+                                <p class="text-3xl font-extrabold text-purple-600 mt-2">
+                                    {{ h.date|date:"d" }}
+                                </p>
+                                <p class="text-sm text-gray-600 font-medium">
+                                    {{ h.date|date:"l, M" }}
+                                </p>
+                            </div>
+                            <div class="text-right">
+                                {% with day_num=h.date|date:"w"|add:"0" %}
+                                    {% if day_num == 0 or day_num == 6 %}
+                                        <span class="inline-block px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">
+                                            Weekend
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">
+                                            School Holiday
+                                        </span>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                        {% if h.description %}
+                        <p class="mt-4 text-gray-600 text-sm italic border-t pt-3">
+                            {{ h.description }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+
+        {% else %}
+            <!-- Empty State -->
+            <div class="bg-white rounded-2xl shadow-xl p-20 text-center">
+                <div class="max-w-md mx-auto">
+                    <i class="fas fa-calendar-times text-9xl text-gray-300 mb-8 block"></i>
+                    <h3 class="text-3xl font-bold text-gray-700 mb-4">No Holidays Added Yet!</h3>
+                    <p class="text-gray-500 text-lg mb-8">
+                        Start planning your school calendar by adding important holidays, festivals, and events.
+                    </p>
+                    <a href="{% url 'add_holiday' %}" 
+                       class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition duration-300">
+                        <i class="fas fa-plus mr-3"></i>
+                        Add Your First Holiday
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
+        <h3 class="text-2xl font-bold text-gray-800 mb-6">Edit Holiday</h3>
+        <form method="POST" action="{% url 'edit_holiday' 0 %}".replace('0', '') id="editForm">
+            {% csrf_token %}
+            <input type="hidden" name="holiday_id" id="editId">
+            <div class="space-y-5">
+                <input type="text" name="name" id="editName" required placeholder="Holiday Name" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition">
+                <input type="date" name="date" id="editDate" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition">
+                <textarea name="description" id="editDesc" rows="3" placeholder="Description (optional)" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition resize-none"></textarea>
+            </div>
+            <div class="flex justify-end space-x-4 mt-8">
+                <button type="button" onclick="closeEditModal()" class="px-6 py-3 border-2 border-gray-300 rounded-xl hover:bg-gray-50 font-medium">Cancel</button>
+                <button type="submit" class="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition">
+                    Update Holiday
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openEditModal(id, name, date, desc) {
+    document.getElementById('editId').value = id;
+    document.getElementById('editName').value = name;
+    document.getElementById('editDate').value = date;
+    document.getElementById('editDesc').value = desc || '';
+    document.getElementById('editForm').action = `/student/holiday/edit/${id}/`;
+    document.getElementById('editModal').classList.remove('hidden');
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').classList.add('hidden');
+}
+
+// Close modal when clicking outside
+window.addEventListener('click', function(e) {
+    if (e.target.id === 'editModal') closeEditModal();
+});
+</script>
+
+<!-- Icons & Tailwind -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
+{% endblock %}
