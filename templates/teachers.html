@@ -25,12 +25,14 @@
                     <span>Export List</span>
                 </a>
 
+                {% if user.is_superuser %}
                 <!-- Add Teacher Button -->
                 <a href="{% url 'add_teacher_page' %}" 
                    class="px-8 py-4 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-bold rounded-xl shadow-lg flex items-center space-x-3 transform hover:scale-105 transition duration-300">
                     <i class="fas fa-plus"></i>
                     <span>Add Teacher</span>
                 </a>
+                {% endif %}
             </div>
         </div>
 
@@ -132,6 +134,7 @@
                            class="p-3 bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-xl shadow hover:shadow-xl transform hover:scale-110 transition">
                             <i class="fas fa-eye"></i>
                         </a>
+                        {% if user.is_superuser %}
                         <a href="{% url 'edit_teacher_page' slug=teacher.teacher_id %}" 
                            class="p-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl shadow hover:shadow-xl transform hover:scale-110 transition">
                             <i class="fas fa-edit"></i>
@@ -144,6 +147,7 @@
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </form>
+                        {% endif %}
                     </div>
                 </div>
 

@@ -24,11 +24,13 @@
                     <span>Export PDF</span>
                 </a>
 
+                {% if user.is_superuser %}
                 <a href="{% url 'add_timetable' %}" 
                    class="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-xl shadow-lg flex items-center space-x-3 transform hover:scale-105 transition duration-300">
                     <i class="fas fa-plus"></i>
                     <span>Add Period</span>
                 </a>
+                {% endif %}
             </div>
         </div>
 
@@ -126,6 +128,7 @@
 
                     <!-- Action Buttons (Hover) -->
                     <div class="flex justify-center space-x-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        {% if user.is_superuser %}
                         <a href="{% url 'edit_timetable' tt.id %}" 
                            class="p-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl shadow hover:shadow-xl transform hover:scale-110 transition">
                             <i class="fas fa-edit"></i>
@@ -138,6 +141,7 @@
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </form>
+                        {% endif %}
                     </div>
                 </div>
 

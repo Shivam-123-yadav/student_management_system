@@ -26,12 +26,14 @@
                     <span>Back to Dashboard</span>
                 </a>
 
+                {% if user.is_superuser %}
                 <!-- Add Exam Button -->
                 <a href="{% url 'add_exam' %}" 
                    class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold rounded-xl shadow-lg flex items-center space-x-3 transform hover:scale-105 transition duration-300">
                     <i class="fas fa-plus"></i>
                     <span>Add New Exam</span>
                 </a>
+                {% endif %}
             </div>
         </div>
 
@@ -77,8 +79,8 @@
 
         <!-- Exam List -->
         {% if exams %}
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
-            <div class="px-8 py-6 bg-gradient-to-r from-indigo-600 to-purple-600">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden" style="padding: 50px">
+            <div class="px-8 py-6 bg-gradient-to-r from-indigo-600 to-purple-600" >
                 <h2 class="text-2xl font-bold text-white flex items-center">
                     <i class="fas fa-list-alt mr-3"></i>
                     All Scheduled Exams
@@ -130,6 +132,7 @@
                             </td>
                             <td class="px-6 py-5 text-right">
                                 <div class="flex items-center justify-end space-x-3">
+                                    {% if user.is_superuser %}
                                     <a href="{% url 'edit_exam' exam.id %}" 
                                        class="p-3 bg-white border border-gray-300 rounded-xl shadow hover:bg-indigo-50 text-indigo-600 hover:text-indigo-800 transition transform hover:scale-110">
                                         <i class="fas fa-edit"></i>
@@ -141,6 +144,7 @@
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </form>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>

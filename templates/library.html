@@ -179,11 +179,13 @@
 
                             <!-- Delete Button (Hover) -->
                             <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition">
+                                {% if user.is_superuser %}
                                 <a href="{% url 'delete_book' b.id %}" 
                                    onclick="return confirm('Delete &quot;{{ b.book_name|escapejs }}&quot; permanently?')"
                                    class="p-3 bg-red-500 hover:bg-red-600 text-white rounded-xl shadow hover:shadow-xl transform hover:scale-110 transition">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
+                                {% endif %}
                             </div>
 
                             <!-- Book Avatar -->
