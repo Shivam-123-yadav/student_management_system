@@ -530,8 +530,7 @@ def add_expenses_view(request):
 
     return render(request, 'add-expenses.html')
 
-# views.py mein
-
+@superuser_required
 def edit_expense_view(request, id):
     expense = Expense.objects.get(id=id)
     if request.method == "POST":
@@ -642,6 +641,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Holiday
 
+@superuser_required
 def holiday_add(request):
     if request.method == "POST":
         name = request.POST.get('name')
@@ -736,6 +736,7 @@ def edit_fees(request, id):
     return render(request, "add-fees.html", {"students": students, "fee": fee})
 
 # Delete Fees
+@superuser_required
 def delete_fees(request, id):
     fee = get_object_or_404(Fee, id=id)
     fee.delete()
@@ -776,6 +777,7 @@ def exam_list(request):
     return render(request, "exam.html", context)
 
 # Add new exam
+@superuser_required
 def add_exam(request):
     if request.method == "POST":
         Exam.objects.create(
@@ -789,6 +791,7 @@ def add_exam(request):
     return render(request, "add-exam.html")
 
 # Edit exam
+@superuser_required
 def edit_exam(request, id):
     exam = get_object_or_404(Exam, id=id)
     if request.method == "POST":
@@ -802,6 +805,7 @@ def edit_exam(request, id):
     return render(request, "edit-exam.html", {"exam": exam})
 
 # Delete exam
+@superuser_required
 def delete_exam(request, id):
     exam = get_object_or_404(Exam, id=id)
     exam.delete()
@@ -818,6 +822,7 @@ def event_list(request):
     events = Event.objects.all()
     return render(request, "event.html", {"events": events})
 
+@superuser_required
 def add_event(request):
     if request.method == "POST":
         Event.objects.create(
@@ -829,6 +834,7 @@ def add_event(request):
         return redirect("event_list")
     return render(request, "add-event.html")
 
+@superuser_required
 def edit_event(request, id):
     event = get_object_or_404(Event, id=id)
     if request.method == "POST":
@@ -840,6 +846,7 @@ def edit_event(request, id):
         return redirect("event_list")
     return render(request, "edit-event.html", {"event": event})
 
+@superuser_required
 def delete_event(request, id):
     event = get_object_or_404(Event, id=id)
     event.delete()
@@ -1006,6 +1013,9 @@ from .models import Library, Sports, Hostel
 
 def library(request):
     if request.method == "POST":
+        if not request.user.is_authenticated or not request.user.is_superuser:
+            messages.error(request, 'You do not have permission to perform this action. Only superusers can add, edit, or delete records.')
+            return redirect('index')
         Library.objects.create(
             book_name=request.POST['book_name'],
             author=request.POST['author'],
@@ -1017,6 +1027,7 @@ def library(request):
     books = Library.objects.all()
     return render(request, 'library.html', {'books': books})
 
+@superuser_required
 def delete_book(request, id):
     Library.objects.get(id=id).delete()
     return redirect('library')
@@ -1027,6 +1038,9 @@ def delete_book(request, id):
 
 def sports(request):
     if request.method == "POST":
+        if not request.user.is_authenticated or not request.user.is_superuser:
+            messages.error(request, 'You do not have permission to perform this action. Only superusers can add, edit, or delete records.')
+            return redirect('index')
         Sports.objects.create(
             sport_name=request.POST['sport_name'],
             category=request.POST['category'],
@@ -1037,6 +1051,7 @@ def sports(request):
     all_sports = Sports.objects.all()
     return render(request, 'sports.html', {'sports': all_sports})
 
+@superuser_required
 def delete_sport(request, id):
     Sports.objects.get(id=id).delete()
     return redirect('sports')
@@ -1047,6 +1062,9 @@ def delete_sport(request, id):
 
 def hostel(request):
     if request.method == "POST":
+        if not request.user.is_authenticated or not request.user.is_superuser:
+            messages.error(request, 'You do not have permission to perform this action. Only superusers can add, edit, or delete records.')
+            return redirect('index')
         Hostel.objects.create(
             hostel_name=request.POST['hostel_name'],
             hostel_type=request.POST['hostel_type'],
@@ -1057,6 +1075,7 @@ def hostel(request):
     all_hostels = Hostel.objects.all()
     return render(request, 'hostel.html', {'hostels': all_hostels})
 
+@superuser_required
 def delete_hostel(request, id):
     Hostel.objects.get(id=id).delete()
     return redirect('hostel')
@@ -1241,7 +1260,7 @@ def student_list(request):
     }
     return render(request, 'students/students.html', context)
 
-@login_required
+@superuser_required
 def add_student(request):
     if request.method == 'POST':
         # Validate unique fields before creating records to avoid DB errors
@@ -1380,10 +1399,8 @@ def view_student(request, slug):
     }
     return render(request, 'students/student-details.html', context)
 
-@login_required
+@superuser_required
 def edit_student(request, slug):
-    if not request.user.is_superuser:
-        return HttpResponseForbidden('Only superusers can edit students.')
     student = get_object_or_404(Student, slug=slug)
     parent = student.parent
     
@@ -1439,10 +1456,8 @@ def edit_student(request, slug):
     }
     return render(request, 'students/edit-student.html', context)
 
-@login_required
+@superuser_required
 def delete_student(request, slug):
-    if not request.user.is_superuser:
-        return HttpResponseForbidden('Only superusers can delete students.')
     if request.method == 'POST':
         student = get_object_or_404(Student, slug=slug)
         parent = student.parent
